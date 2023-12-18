@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="mxW328" name="OB-Xd" projectType="audioplug" version="2.11.0"
-              bundleIdentifier="com.discoDSP.Obxd" includeBinaryInAppConfig="1"
-              pluginName="OB-Xd" pluginDesc="Emulation of famous OB-X, OB-Xa and OB-8 synths"
-              pluginManufacturer="discoDSP" pluginManufacturerCode="DDSP" pluginCode="Obxd"
-              pluginIsSynth="1" pluginWantsMidiIn="1" pluginProducesMidiOut="0"
+<JUCERPROJECT id="mxW328" name="OB-Xd-GREC" projectType="audioplug" version="0.01"
+              bundleIdentifier="com.rfawcett160.ObxdGREC" includeBinaryInAppConfig="1"
+              pluginName="OB-Xd-GREC" pluginDesc="Emulation of famous OB-X, OB-Xa and OB-8 synths"
+              pluginManufacturer="Robert Fawcett" pluginManufacturerCode="Grec"
+              pluginCode="Grec" pluginIsSynth="1" pluginWantsMidiIn="1" pluginProducesMidiOut="0"
               pluginSilenceInIsSilenceOut="0" pluginEditorRequiresKeys="0"
-              pluginAUExportPrefix="" pluginRTASCategory="2048" aaxIdentifier="com.discodsp.obxd"
-              companyName="discoDSP" companyWebsite="https://www.discodsp.com/"
-              pluginIsMidiEffectPlugin="0" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginAUExportPrefix="" pluginRTASCategory="2048" aaxIdentifier="com.rfawcett.obxdgrec"
+              companyWebsite="https://github.com/rfawcett160/OB-Xd-GREC" pluginIsMidiEffectPlugin="0"
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               pluginFormats="buildAU,buildLV2,buildStandalone,buildVST,buildVST3"
               buildVST="1" buildVST3="1" buildAU="1" buildAUv3="0" buildRTAS="0"
               buildAAX="0" buildStandalone="1" enableIAA="0" jucerFormatVersion="1"
-              companyCopyright="discoDSP" companyEmail="contactus@discodsp.com"
-              pluginAAXCategory="2048" pluginVSTCategory="kPlugCategSynth"
-              displaySplashScreen="1" pluginChannelConfigs="{0,2}" pluginAUMainType="'aumu'"
-              pluginVST3Category="Synth" lv2Uri="https://www.discodsp.com/obxd/">
-  <MAINGROUP id="NZ3n4V" name="OB-Xd">
+              companyEmail="rob.fawcett160@gmail.com" pluginAAXCategory="2048"
+              pluginVSTCategory="kPlugCategSynth" displaySplashScreen="1" pluginChannelConfigs="{0,2}"
+              pluginAUMainType="'aumu'" pluginVST3Category="Synth" lv2Uri="https://github.com/rfawcett160/OB-Xd-GREC"
+              companyName="Robert Fawcett" companyCopyright="Robert Fawcett">
+  <MAINGROUP id="NZ3n4V" name="OB-Xd-GREC">
     <GROUP id="{90740217-84AB-FD0D-FBC4-CA9EA2C68D5E}" name="Source">
       <GROUP id="{E11C29DD-69D5-DA26-5CFF-B65751876DEE}" name="MTS">
         <FILE id="IUi0NP" name="libMTSClient.cpp" compile="1" resource="0"
@@ -95,7 +95,7 @@
                 vstLegacyFolder="Modules/vstsdk2.4" extraDefs="JUCE_MODAL_LOOPS_PERMITTED=1">
       <CONFIGURATIONS>
         <CONFIGURATION name="Release64" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
-                       targetName="OB-Xd" linuxArchitecture="-m64" headerPath="../../JuceLibraryCode&#10;../../Source&#10;../Modules/vstsdk2.4&#10;/usr/include/freetype2&#10;/usr/include"
+                       targetName="OB-Xd-GREC" linuxArchitecture="-m64" headerPath="../../JuceLibraryCode&#10;../../Source&#10;../Modules/vstsdk2.4&#10;/usr/include/freetype2&#10;/usr/include"
                        linkTimeOptimisation="1" enablePluginBinaryCopyStep="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
