@@ -26,6 +26,6 @@ Source code can be compiled with [JUCE 7.0.3](https://github.com/juce-framework/
 
 This repository and the source code is under GPL3 license.
 
-For now, Files from Source > Images folder in this commit have Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0) license. Any skins/themes that I make will be licensed through an appropriate Creative Commons license such that there will be absolutely no restriction on their use in another piece of work (software, art, etc.)
+For now, Files from Source > Images folder in this commit have Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0) license. Any skins/themes that I make will be found in the 'Themes' folder and will be licensed using the CC BY-ND 4.0 license unless otherwise noted in this Copyright section.
 
-
+QuickAndDirtyGREC Theme was made using some of [gitterdude's](https://github.com/gitterdude) contributions to [OB-Xx](https://github.com/pauloesteban/OB-Xx) by [pauloesteban](https://github.com/pauloesteban). Specifically, gitterdude's 'coords.xml' was used for placement of the various knobs and buttons on the main interface. All graphics were designed by myself from within the [GNU Image Manipulation Program] (https://www.gimp.org/). As a result, QuickAndDirtyGREC will be released under the same Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) license since gitterdude's theme was used as a template for the QuickAndDirtyGREC Theme. Many thanks to gitterdude for the creation of the [OB-Xx](https://github.com/pauloesteban/OB-Xx) theme.
