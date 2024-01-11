@@ -9,12 +9,12 @@
               pluginAUExportPrefix="" pluginRTASCategory="2048" aaxIdentifier="com.rfawcett.obxdgrec"
               companyWebsite="https://github.com/rfawcett160/OB-Xd-GREC" pluginIsMidiEffectPlugin="0"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              pluginFormats="buildAU,buildLV2,buildStandalone,buildVST,buildVST3"
-              buildVST="1" buildVST3="1" buildAU="1" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" buildStandalone="1" enableIAA="0" jucerFormatVersion="1"
-              companyEmail="rob.fawcett160@gmail.com" pluginAAXCategory="2048"
-              pluginVSTCategory="kPlugCategSynth" displaySplashScreen="1" pluginChannelConfigs="{0,2}"
-              pluginAUMainType="'aumu'" pluginVST3Category="Synth" lv2Uri="https://github.com/rfawcett160/OB-Xd-GREC"
+              pluginFormats="buildStandalone,buildVST3" buildVST="0" buildVST3="1"
+              buildAU="0" buildAUv3="0" buildRTAS="0" buildAAX="0" buildStandalone="1"
+              enableIAA="0" jucerFormatVersion="1" companyEmail="rob.fawcett160@gmail.com"
+              pluginAAXCategory="2048" pluginVSTCategory="kPlugCategSynth"
+              displaySplashScreen="1" pluginChannelConfigs="{0,2}" pluginAUMainType="'aumu'"
+              pluginVST3Category="Synth" lv2Uri="https://github.com/rfawcett160/OB-Xd-GREC"
               companyName="Robert Fawcett" companyCopyright="Robert Fawcett">
   <MAINGROUP id="NZ3n4V" name="OB-Xd-GREC">
     <GROUP id="{90740217-84AB-FD0D-FBC4-CA9EA2C68D5E}" name="Source">
@@ -116,23 +116,23 @@
     </LINUX_MAKE>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULES id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
-             useGlobalPath="0"/>
-    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+             useGlobalPath="1"/>
+    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled" JUCE_WEB_BROWSER="0" JUCE_ASIO="1"
-               JUCE_JACK="1" JUCE_USE_CURL="0"/>
+               JUCE_JACK="1" JUCE_USE_CURL="0" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <LIVE_SETTINGS>
     <OSX/>
     <WINDOWS/>

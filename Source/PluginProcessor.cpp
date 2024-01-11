@@ -838,11 +838,11 @@ File ObxdAudioProcessor::getCurrentBankFile() const
 //==============================================================================
 File ObxdAudioProcessor::getDocumentFolder() const
 {
-	File folder = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("discoDSP").getChildFile("OB-Xd");
+	File folder = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("rfawcett").getChildFile("OB-Xd-GREC");
 /*
     if (! folder.exists())
     {
-        NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "Error", "Documents > discoDSP > OB-Xd folder not found.");
+        NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "Error", "Documents > rfawcett > OB-Xd-GREC folder not found.");
     }
  */
 	if (folder.isSymbolicLink())
