@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="mxW328" name="OB-Xd-GREC" projectType="audioplug" version="0.01"
+<JUCERPROJECT id="mxW328" name="OB-Xd-GREC" projectType="audioplug" version="1.0"
               bundleIdentifier="com.rfawcett160.ObxdGREC" includeBinaryInAppConfig="1"
               pluginName="OB-Xd-GREC" pluginDesc="Emulation of famous OB-X, OB-Xa and OB-8 synths"
               pluginManufacturer="Robert Fawcett" pluginManufacturerCode="Grec"
