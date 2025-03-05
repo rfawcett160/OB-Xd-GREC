@@ -838,6 +838,8 @@ File ObxdAudioProcessor::getCurrentBankFile() const
 //==============================================================================
 File ObxdAudioProcessor::getDocumentFolder() const
 {
+    /// TODO: This file path needs to be updated to Documents or Home.
+    /// Might be nice to have the defaults in the project.
 	File folder = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("rfawcett160").getChildFile("OB-Xd-GREC");
 /*
     if (! folder.exists())

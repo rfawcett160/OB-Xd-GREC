@@ -864,7 +864,7 @@ void ObxdAudioProcessorEditor::rebuildComponents (ObxdAudioProcessor& ownerFilte
 void ObxdAudioProcessorEditor::createMenu ()
 {
 #if JUCE_MAC
-	bool enablePasteOption = macPasteboard::containsPresetData();	// Check if the clipboard contains data for a Preset
+//	bool enablePasteOption = macPasteboard::containsPresetData();	// Check if the clipboard contains data for a Preset
 #else
     juce::MemoryBlock memoryBlock;
     memoryBlock.fromBase64Encoding(SystemClipboard::getTextFromClipboard());
@@ -936,6 +936,7 @@ void ObxdAudioProcessorEditor::createMenu ()
 
 		fileMenu.addSeparator();
 		
+        /*
 		fileMenu.addItem(static_cast<int>(MenuAction::CopyPreset),
 					 "Copy Preset...",
 					 true,
@@ -946,8 +947,7 @@ void ObxdAudioProcessorEditor::createMenu ()
 					 enablePasteOption,
 					 false);
 
-		/*
-        fileMenu.addItem(static_cast<int>(MenuAction::DeleteBank),
+         fileMenu.addItem(static_cast<int>(MenuAction::DeleteBank),
                      "Delete Bank...",
                      true,
                      false);
@@ -1354,7 +1354,7 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action){
 		processor.serializePreset(serializedData);
 
 		// Place the data onto the clipboard
-		macPasteboard::copyPresetDataToClipboard(serializedData.getData(), serializedData.getSize());
+//		macPasteboard::copyPresetDataToClipboard(serializedData.getData(), serializedData.getSize());
 	}
 
 	// Paste from clipboard
@@ -1363,11 +1363,11 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action){
 		juce::MemoryBlock memoryBlock;
 
 		// Fetch Preset data from the clipboard
-		if (macPasteboard::fetchPresetDataFromClipboard(memoryBlock))
-		{
-			// Load the data
-			processor.loadFromMemoryBlock(memoryBlock);	//loadPreset(memoryBlock);
-		}
+//		if (macPasteboard::fetchPresetDataFromClipboard(memoryBlock))
+//		{
+//			// Load the data
+//			processor.loadFromMemoryBlock(memoryBlock);	//loadPreset(memoryBlock);
+//		}
 	}
 #else
     // Copy to clipboard
