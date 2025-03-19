@@ -838,11 +838,11 @@ File ObxdAudioProcessor::getCurrentBankFile() const
 //==============================================================================
 File ObxdAudioProcessor::getDocumentFolder() const
 {
-	File folder = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("rfawcett160").getChildFile("OB-Xd-GREC");
+	File folder = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("OB-Xd-GREC");
 /*
     if (! folder.exists())
     {
-        NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "Error", "Documents > rfawcett160 > OB-Xd-GREC folder not found.");
+        NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "Error", "Documents > OB-Xd-GREC folder not found.");
     }
  */
 	if (folder.isSymbolicLink())
