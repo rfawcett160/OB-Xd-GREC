@@ -1,4 +1,0 @@
-This is just a test to insure
-that my windows ssh for github has been added and works. 
-
-test successful if I see this pushed to github. 
