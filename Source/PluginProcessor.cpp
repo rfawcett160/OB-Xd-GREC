@@ -838,7 +838,8 @@ File ObxdAudioProcessor::getCurrentBankFile() const
 //==============================================================================
 File ObxdAudioProcessor::getDocumentFolder() const
 {
-	File folder = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile("OB-Xd-GREC");
+    // To Prevent MS OneDrive nonsense, I am resolving to the user's home directory and then to the Documents folder. 
+	File folder = File::getSpecialLocation(File::userHomeDirectory).getChildFile("Documents/OB-Xd-GREC");
 /*
     if (! folder.exists())
     {
