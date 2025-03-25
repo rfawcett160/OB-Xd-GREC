@@ -365,7 +365,7 @@ AudioProcessorEditor* ObxdAudioProcessor::createEditor()
 //==============================================================================
 void ObxdAudioProcessor::getStateInformation(MemoryBlock& destData)
 {
-	XmlElement xmlState = XmlElement("discoDSP");
+	XmlElement xmlState = XmlElement("obxdgrec");
 	xmlState.setAttribute(S("currentProgram"), programs.currentProgram);
 
 	XmlElement* xprogs = new XmlElement("programs");
@@ -392,7 +392,7 @@ void ObxdAudioProcessor::getStateInformation(MemoryBlock& destData)
 
 void ObxdAudioProcessor::getCurrentProgramStateInformation(MemoryBlock& destData)
 {
-	XmlElement xmlState = XmlElement("discoDSP");
+	XmlElement xmlState = XmlElement("obxdgrec");
 
 	for (int k = 0; k < PARAM_COUNT; ++k)
 	{
