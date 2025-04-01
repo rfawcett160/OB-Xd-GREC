@@ -2,7 +2,7 @@
 	==============================================================================
 	This file is part of Obxd synthesizer.
 
-	Copyright © 2013-2014 Filatov Vadim
+	Copyright ï¿½ 2013-2014 Filatov Vadim
 	
 	Contact author via email :
 	justdat_@_e1.ru
@@ -54,7 +54,7 @@ inline static float getPitch(float index)
 
 inline static float tptlpupw(float & state , float inp , float cutoff , float srInv)
 {
-	cutoff = (cutoff * srInv)*juce::float_Pi;
+	cutoff = (cutoff * srInv)*juce::MathConstants<float>::pi;
 	double v = (inp - state) * cutoff / (1 + cutoff);
 	double res = v + state;
 	state = res + v;
@@ -63,7 +63,7 @@ inline static float tptlpupw(float & state , float inp , float cutoff , float sr
 
 inline static float tptlp(float& state,float inp,float cutoff,float srInv)
 {
-	cutoff = tan(cutoff * (srInv)* (juce::float_Pi)) ;
+	cutoff = tan(cutoff * (srInv)* (juce::MathConstants<float>::pi)) ;
 	double v = (inp - state) * cutoff / (1 + cutoff);
 	double res = v + state;
 	state = res + v;

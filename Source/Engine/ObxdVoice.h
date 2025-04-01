@@ -237,7 +237,7 @@ public:
 	void setBrightness(float val)
 	{
 		briHold = val;
-		brightCoef = tan(jmin(val,flt.SampleRate*0.5f-10)* (juce::float_Pi)*flt.sampleRateInv);
+		brightCoef = tan(jmin(val,flt.SampleRate*0.5f-10)* (juce::MathConstants<float>::pi)*flt.sampleRateInv);
 
 	}
 	void setEnvDer(float d)
@@ -264,7 +264,7 @@ public:
 		fenv.setSampleRate(sr);
 		SampleRate = sr;
 		sampleRateInv = 1 / sr;
-		brightCoef = tan(jmin(briHold,flt.SampleRate*0.5f-10)* (juce::float_Pi) * flt.sampleRateInv);
+		brightCoef = tan(jmin(briHold,flt.SampleRate*0.5f-10)* (juce::MathConstants<float>::pi) * flt.sampleRateInv);
 	}
 	void checkAdsrState()
 	{
