@@ -685,12 +685,15 @@ void ObxdAudioProcessorEditor::scaleFactorChanged()
     int height = backgroundImage.getHeight();
     
     
+    // Changing roundFloatToInt to roundToInt
+    // Robert Fawcett
+
     if (!highResolutionDisplay)
     {
         if (scaleFactor == 1.5f)
         {
-            width = roundFloatToInt(width * 0.75f);
-            height = roundFloatToInt(height * 0.75f);
+            width = roundToInt(width * 0.75f);
+            height = roundToInt(height * 0.75f);
             
         }
         else if (scaleFactor == 2.0f)
@@ -706,8 +709,8 @@ void ObxdAudioProcessorEditor::scaleFactorChanged()
         }
         else if (scaleFactor == 1.5f) //4x images =>150%
         {
-            width = roundFloatToInt(width * (0.25f + 0.125f));
-            height = roundFloatToInt(height * (0.25f + 0.125f));
+            width = roundToInt(width * (0.25f + 0.125f));
+            height = roundToInt(height * (0.25f + 0.125f));
             
         }
         else if (scaleFactor == 2.0f) //4x images =>200x
