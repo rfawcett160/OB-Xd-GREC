@@ -399,56 +399,62 @@ void ObxdAudioProcessor::getCurrentProgramStateInformation(MemoryBlock& destData
 	copyXmlToBinary(xmlState, destData);
 }
 
+// Updated code below to fix deprecation with macro.
+// Updated macroBasedForLoop() with range-based for loop using getChildIterator()
+// Robert Fawcett
+
 void ObxdAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
 #if JUCE_VERSION <= JUCE_543
-	XmlElement * const xmlState = getXmlFromBinary(data, sizeInBytes);
+    XmlElement* const xmlState = getXmlFromBinary(data, sizeInBytes);
 #else
-	std::unique_ptr<XmlElement> xmlState = getXmlFromBinary(data, sizeInBytes);
+    std::unique_ptr<XmlElement> xmlState = getXmlFromBinary(data, sizeInBytes);
 #endif
     
     DBG(" XML:" << xmlState->toString());
-	if (xmlState)
-	{
-		XmlElement* xprogs = xmlState->getFirstChildElement();
-		if (xprogs && xprogs->hasTagName(S("programs")))
-		{
-			int i = 0;
-			forEachXmlChildElement(*xprogs, e)
-			{
-				bool newFormat = e->hasAttribute("voiceCount");
-				programs.programs[i].setDefaultValues();
+    if (xmlState)
+    {
+        XmlElement* xprogs = xmlState->getFirstChildElement();
+        if (xprogs && xprogs->hasTagName(S("programs")))
+        {
+            int i = 0;
+            for (auto* e : xprogs->getChildIterator()) // Replace forEachXmlChildElement
+            {
+                bool newFormat = e->hasAttribute("voiceCount");
+                programs.programs[i].setDefaultValues();
 
-				for (int k = 0; k < PARAM_COUNT; ++k)
-				{
+                for (int k = 0; k < PARAM_COUNT; ++k)
+                {
                     float value = 0.0;
-                    if (e->hasAttribute("Val_" + String(k))){
+                    if (e->hasAttribute("Val_" + String(k)))
+                    {
                         value = float(e->getDoubleAttribute("Val_" + String(k), programs.programs[i].values[k]));
-                    } else {
+                    }
+                    else
+                    {
                         value = float(e->getDoubleAttribute(String(k), programs.programs[i].values[k]));
                     }
                     
-					if (!newFormat && k == VOICE_COUNT) value *= 0.25f;
-					programs.programs[i].values[k] = value;
-				}
+                    if (!newFormat && k == VOICE_COUNT) value *= 0.25f;
+                    programs.programs[i].values[k] = value;
+                }
 
-				programs.programs[i].name = e->getStringAttribute(S("programName"), S("Default"));
+                programs.programs[i].name = e->getStringAttribute(S("programName"), S("Default"));
 
-				++i;
-				}
-			}
+                ++i;
+            }
+        }
 
-		//bindings.getXml(*xmlState);
+        //bindings.getXml(*xmlState);
 #if ! DEMOVERSION
-		setCurrentProgram(xmlState->getIntAttribute(S("currentProgram"), 0));
-
+        setCurrentProgram(xmlState->getIntAttribute(S("currentProgram"), 0));
         sendChangeMessage();
 #endif
 #if JUCE_VERSION <= JUCE_543
-		delete xmlState;
+        delete xmlState;
 #endif
-		}
-	}
+    }
+}
 
 void  ObxdAudioProcessor::setCurrentProgramStateInformation(const void* data, int sizeInBytes)
 {
