@@ -168,6 +168,9 @@ void ObxdAudioProcessorEditor::resized() {
         }
     }
 }
+
+// Updating deprecated macro as macroBasedForLoop() is deprecated. 
+// Robert Fawcett. 
 void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
 {
     knobAttachments.clear();
@@ -187,8 +190,6 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
         return;
     }
     
-    //if (coords.createInputStream())
-    
     XmlDocument skin (coords);
     auto doc = skin.getDocumentElement();
     if (!doc) {
@@ -199,7 +200,7 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
         int xScreen = getWidth(), yScreen = getHeight();
         if (doc->getTagName() == "PROPERTIES"){
            
-            forEachXmlChildElementWithTagName(*doc, child, "VALUE"){
+            for (auto* child : doc->getChildWithTagNameIterator("VALUE")) { // Replaced macro here
                 if (child->hasAttribute("NAME") && child->hasAttribute("x") && child->hasAttribute("y")) {
                     String name = child->getStringAttribute("NAME");
                     int x = child->getIntAttribute("x");
@@ -207,7 +208,6 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
                     int d = child->getIntAttribute("d");
                     int w = child->getIntAttribute("w");
                     int h = child->getIntAttribute("h");
-                    
                     
                     if (name == "resonanceKnob"){
                         resonanceKnob = addKnob (x, y, d, ownerFilter, RESONANCE, "Resonance", 0);
@@ -308,7 +308,8 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
                         attackKnob = addKnob (x, y, d, ownerFilter, LATK, "Atk", 0);
                         mappingComps["attackKnob"] = attackKnob;
                     }
-                    if (name == "decayKnob"){ decayKnob = addKnob (x, y, d, ownerFilter, LDEC, "Dec", 0);
+                    if (name == "decayKnob"){
+                        decayKnob = addKnob (x, y, d, ownerFilter, LDEC, "Dec", 0);
                         mappingComps["decayKnob"] = decayKnob;
                     }
                     if (name == "sustainKnob"){
@@ -379,7 +380,6 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
                     if (name == "lfoPwm1Button"){
                         lfoPwm1Button = addButton (x, y,  w, h, ownerFilter, LFOPW1, "Osc1");
                         mappingComps["lfoPwm1Button"] = lfoPwm1Button;
-
                     }
                     if (name == "lfoPwm2Button"){
                         lfoPwm2Button = addButton (x, y,  w, h, ownerFilter, LFOPW2, "Osc2");
@@ -514,7 +514,7 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
                         pan4Knob->resetOnShiftClick(true, Action::panReset);
                         pan4Knob->addActionListener(this);
                         mappingComps["pan4Knob"] = pan4Knob;
-                    }
+  }
                     
                     if (name == "pan5Knob"){
                         pan5Knob = addKnob (x, y, d, ownerFilter, PAN5, "5", 0.5);
@@ -573,38 +573,20 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
                         mappingComps["voiceSwitch"] = voiceSwitch.get();
                     }
 
-
                     if (name == "legatoSwitch"){
                         legatoSwitch.reset(addList (x, y, w, h, ownerFilter, LEGATOMODE, "Legato", "legato"));
-                       
                         legatoSwitch->setLookAndFeel(&this->getLookAndFeel());
                         mappingComps["legatoSwitch"] = legatoSwitch.get();
                     }
-
-
                     
                     if (name == "menu")
                     {
                         ImageButton *img = addMenuButton (x, y, d, "menu");
                         mappingComps["menu"] = img;
                     }
-
-                    /*
-                    if (name == "guisize") {
-                        xScreen = x;
-                        yScreen = y;
-                        if (processor.getShowPresetBar()) {
-                            setSize(xScreen, yScreen + 40);
-                        }
-                        else {
-                            setSize(xScreen, yScreen);
-                        }
-                    }
-                    */
-                    
-                    //DBG(" Name: " << name << " X: " <<x <<" Y: "<<y);
                 }
             }
+
         }
 
 
