@@ -106,45 +106,61 @@ void ObxdAudioProcessorEditor::resized() {
     }
     XmlDocument skin (coords);
     auto doc = skin.getDocumentElement();
-    if (doc){
+    
+    // Updated the deprecated macro forEachXmlChildElementWithTagName function.
+    // Robert Fawcett
+    if (doc)
+    {
         //int xScreen = getWidth(), yScreen = getHeight();
-        if (doc->getTagName() == "PROPERTIES"){
-            forEachXmlChildElementWithTagName(*doc, child, "VALUE"){
-                if (child->hasAttribute("NAME") && child->hasAttribute("x") && child->hasAttribute("y")) {
-                    String name = child->getStringAttribute("NAME");
-                    int x = child->getIntAttribute("x");
-                    int y = child->getIntAttribute("y");
-                    int d = child->getIntAttribute("d");
-                    int w = child->getIntAttribute("w");
-                    int h = child->getIntAttribute("h");
-                    bool tooltipEnabled = child->getBoolAttribute("tooltip", false);
-                    DBG(" COmponent : " << name);
-                    if (mappingComps[name] != nullptr){
-                        if (auto* knob = dynamic_cast<Knob*>(mappingComps[name])){
-                            knob->setBounds(transformBounds(x, y, d,d));
-                            const auto tooltipBehavior = processor.getTooltipBehavior();
-                            if (tooltipBehavior == Tooltip::Disable ||
-                                (tooltipBehavior == Tooltip::StandardDisplay && !tooltipEnabled))
+        if (doc->getTagName() == "PROPERTIES")
+        {
+            for (auto* child = doc->getFirstChildElement(); child != nullptr; child = child->getNextElement())
+            {
+                if (child->hasTagName("VALUE"))
+                {
+                    if (child->hasAttribute("NAME") && child->hasAttribute("x") && child->hasAttribute("y"))
+                    {
+                        String name = child->getStringAttribute("NAME");
+                        int x = child->getIntAttribute("x");
+                        int y = child->getIntAttribute("y");
+                        int d = child->getIntAttribute("d");
+                        int w = child->getIntAttribute("w");
+                        int h = child->getIntAttribute("h");
+                        bool tooltipEnabled = child->getBoolAttribute("tooltip", false);
+                        DBG(" COmponent : " << name);
+                        if (mappingComps[name] != nullptr)
+                        {
+                            if (auto* knob = dynamic_cast<Knob*>(mappingComps[name]))
                             {
-                                knob->setPopupDisplayEnabled(false, false, nullptr);
-                            } else
-                            {
-                                knob->setPopupDisplayEnabled(true, true, knob->getParentComponent());
+                                knob->setBounds(transformBounds(x, y, d, d));
+                                const auto tooltipBehavior = processor.getTooltipBehavior();
+                                if (tooltipBehavior == Tooltip::Disable ||
+                                    (tooltipBehavior == Tooltip::StandardDisplay && !tooltipEnabled))
+                                {
+                                    knob->setPopupDisplayEnabled(false, false, nullptr);
+                                }
+                                else
+                                {
+                                    knob->setPopupDisplayEnabled(true, true, knob->getParentComponent());
+                                }
                             }
-                        }
-                        else if (dynamic_cast<ButtonList*>(mappingComps[name])){
-                            mappingComps[name]->setBounds(transformBounds(x, y,  w, h));
-                            //((ButtonList *)mappingComps[name])->getRootMenu()->setLookAndFeel(& getLookAndFeel());
-                        }
-
-                        else if (dynamic_cast<TooglableButton*>(mappingComps[name])){
-                            mappingComps[name]->setBounds(transformBounds(x, y,  w, h));
-                        }
-                        else if (dynamic_cast<ImageMenu*>(mappingComps[name])){
-                            mappingComps[name]->setBounds(transformBounds(x, y,  d, d));
-                        }
-                        else if (dynamic_cast<ImageButton*>(mappingComps[name])){
-                            mappingComps[name]->setBounds(transformBounds(x, y,  w, h));
+                            else if (dynamic_cast<ButtonList*>(mappingComps[name]))
+                            {
+                                mappingComps[name]->setBounds(transformBounds(x, y, w, h));
+                                //((ButtonList *)mappingComps[name])->getRootMenu()->setLookAndFeel(& getLookAndFeel());
+                            }
+                            else if (dynamic_cast<TooglableButton*>(mappingComps[name]))
+                            {
+                                mappingComps[name]->setBounds(transformBounds(x, y, w, h));
+                            }
+                            else if (dynamic_cast<ImageMenu*>(mappingComps[name]))
+                            {
+                                mappingComps[name]->setBounds(transformBounds(x, y, d, d));
+                            }
+                            else if (dynamic_cast<ImageButton*>(mappingComps[name]))
+                            {
+                                mappingComps[name]->setBounds(transformBounds(x, y, w, h));
+                            }
                         }
                     }
                 }
