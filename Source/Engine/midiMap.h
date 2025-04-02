@@ -431,7 +431,7 @@ public:
     void saveFile(File& xml){
         XmlElement ele("Data");
         this->setXml(ele);
-        ele.writeToFile(xml, String());
+        ele.writeTo(xml);
     }
     
     void clean(){
