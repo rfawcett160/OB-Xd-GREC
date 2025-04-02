@@ -795,30 +795,56 @@ bool ObxdAudioProcessor::restoreProgramSettings(const fxProgram* const prog)
 }
 
 //==============================================================================
+// void ObxdAudioProcessor::scanAndUpdateBanks()
+// {
+// 	bankFiles.clear();
+
+// 	DirectoryIterator it (getBanksFolder(), false, "*.fxb", File::findFiles);
+	
+//     while (it.next())
+// 	{
+// 		bankFiles.addUsingDefaultSort (it.getFile());
+//         DBG("Scan Banks: " << it.getFile().getFullPathName());
+// 	}
+// }
+/*Commenting out this code for Update Banks and replacing with code below to fix deprecated class call. Robert Fawcett*/
+
 void ObxdAudioProcessor::scanAndUpdateBanks()
 {
-	bankFiles.clear();
+    bankFiles.clear();
 
-	DirectoryIterator it (getBanksFolder(), false, "*.fxb", File::findFiles);
-	
-    while (it.next())
-	{
-		bankFiles.addUsingDefaultSort (it.getFile());
-        DBG("Scan Banks: " << it.getFile().getFullPathName());
-	}
+    for (const auto& entry : RangedDirectoryIterator(getBanksFolder(), false, "*.fxb", File::findFiles))
+    {
+        bankFiles.addUsingDefaultSort(entry.getFile());
+        DBG("Scan Banks: " << file.getFullPathName());
+    }
 }
+
+
+// void ObxdAudioProcessor::scanAndUpdateSkins()
+// {
+//     skinFiles.clearQuick();
+//     DirectoryIterator it (getSkinFolder(), false, "*", File::findDirectories);
+    
+//     while (it.next())
+//     {
+//         skinFiles.addUsingDefaultSort (it.getFile());
+//     }
+    
+// }
+/*Commenting out this code for Update Skins and replacing with code below to fix deprecated class call. Robert Fawcett*/
 
 void ObxdAudioProcessor::scanAndUpdateSkins()
 {
     skinFiles.clearQuick();
-    DirectoryIterator it (getSkinFolder(), false, "*", File::findDirectories);
-    
-    while (it.next())
+
+    for (const auto& entry : RangedDirectoryIterator(getSkinFolder(), false, "*", File::findDirectories))
     {
-        skinFiles.addUsingDefaultSort (it.getFile());
+        skinFiles.addUsingDefaultSort(entry.getFile());
     }
-    
 }
+
+
 
 const Array<File>& ObxdAudioProcessor::getBankFiles() const
 {

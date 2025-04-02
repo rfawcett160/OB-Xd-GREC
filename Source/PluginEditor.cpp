@@ -1067,13 +1067,20 @@ void ObxdAudioProcessorEditor::createMidi(int menuNo, PopupMenu &menuMidi) {
         midiFiles.add(custom_file.getFullPathName());
     }
     
-    DirectoryIterator iter (midi_dir, true, "*.xml");
+    // DirectoryIterator iter (midi_dir, true, "*.xml");
+    // StringArray list;
+    // while (iter.next())
+    // {
+    //     list.add(iter.getFile().getFullPathName());
+    // }
+    /*Commenting this out and replacing with new code below. This is to fix deprecated Class. Robert Fawcett*/
+
     StringArray list;
-    while (iter.next())
+    for (const auto& entry : RangedDirectoryIterator(midi_dir, true, "*.xml", File::findFiles))
     {
-        list.add(iter.getFile().getFullPathName());
+        list.add(entry.getFile().getFullPathName());
     }
-    
+
     list.sort(true);
     
     for (int i =0; i < list.size() ; i ++){
