@@ -139,8 +139,14 @@ public:
     bool hasEditor() const override;
 	
 	//==============================================================================
-	void processMidiPerSample (MidiBuffer::Iterator* iter, const int samplePos);
-	bool getNextEvent (MidiBuffer::Iterator* iter, const int samplePos);
+	// This part is now handled entirely by the processBlock.
+	// Robert Fawcett
+	
+	// void processMidiPerSample (MidiBuffer::Iterator* iter, const int samplePos);
+	// Commented out code and replaced with below to fix deprecation.
+	// Robert Fawcett
+	// void processMidiPerSample(MidiBuffer& midiMessages, const int samplePos);
+	// bool getNextEvent (MidiBuffer::Iterator* iter, const int samplePos);
 
 	//==============================================================================
     void initAllParams();
@@ -232,13 +238,13 @@ private:
 	int lastMovedController;
 	int lastUsedParameter;
 
-	MidiMessage* nextMidi;
-	MidiMessage* midiMsg;
+	// MidiMessage* nextMidi;
+	// MidiMessage* midiMsg;
 	
 	bool midiControlledParamSet;
 
-	bool hasMidiMessage;
-	int midiEventPos;
+	// bool hasMidiMessage;
+	// int midiEventPos;
 
 	SynthEngine synth;
 	ObxdBank programs;

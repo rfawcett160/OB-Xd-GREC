@@ -218,8 +218,8 @@ void ObxdAudioProcessor::prepareToPlay (double sampleRate, int /*samplesPerBlock
 {
 	// Use this method as the place to do any pre-playback
 	// initialisation that you need..
-	nextMidi = new MidiMessage (0xF0);
-	midiMsg  = new MidiMessage (0xF0);
+	// nextMidi = new MidiMessage (0xF0);
+	// midiMsg  = new MidiMessage (0xF0);
 	synth.setSampleRate (sampleRate);
 }
 
@@ -227,123 +227,24 @@ void ObxdAudioProcessor::releaseResources()
 {
 }
 
-inline void ObxdAudioProcessor::processMidiPerSample (MidiBuffer::Iterator* iter, const int samplePos)
+// Iterator now handled by processBlock
+// Robert Fawcett
+void ObxdAudioProcessor::processBlock(AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-	while (getNextEvent (iter, samplePos))
-	{
-		if (midiMsg->isNoteOn())
-		{
-			synth.procNoteOn (midiMsg->getNoteNumber(), midiMsg->getFloatVelocity());
-		}
-		if (midiMsg->isNoteOff())
-		{
-			synth.procNoteOff (midiMsg->getNoteNumber());
-		}
-		if (midiMsg->isPitchWheel())
-		{
-			// [0..16383] center = 8192;
-			synth.procPitchWheel ((midiMsg->getPitchWheelValue() - 8192) / 8192.0f);
-		}
-		if (midiMsg->isController() && midiMsg->getControllerNumber() == 1)
-        {
-			synth.procModWheel (midiMsg->getControllerValue() / 127.0f);
-        }
-		if(midiMsg->isSustainPedalOn())
-		{
-			synth.sustainOn();
-		}
-		if(midiMsg->isSustainPedalOff() || midiMsg->isAllNotesOff()||midiMsg->isAllSoundOff())
-		{
-			synth.sustainOff();
-		}
-		if(midiMsg->isAllNotesOff())
-		{
-			synth.allNotesOff();
-		}
-		if(midiMsg->isAllSoundOff())
-		{
-			synth.allSoundOff();
-        }
-        
-        DBG(" Message: " << midiMsg->getChannel() << " "<<midiMsg->getRawData()[0] << " "<< midiMsg->getRawData()[1] << " "<< midiMsg->getRawData()[2]);
-        
-        if (midiMsg->isProgramChange()){ // xC0
-            setCurrentProgram(midiMsg->getProgramChangeNumber());
-            
-        } else
-        if (midiMsg->isController()) // xB0
-        {
-            lastMovedController = midiMsg->getControllerNumber();
-            if (programs.currentProgramPtr->values[MIDILEARN] > 0.5f){
-                midiControlledParamSet = true;
-                //bindings[lastMovedController] = lastUsedParameter;
-                bindings.updateCC(lastUsedParameter, lastMovedController);
-                File midi_file = getMidiFolder().getChildFile("Custom.xml");
-                bindings.saveFile(midi_file);
-                currentMidiPath = midi_file.getFullPathName();
-                
-                setEngineParameterValue (MIDILEARN, 0, true);
-                lastMovedController = 0;
-                lastUsedParameter = 0;
-                midiControlledParamSet = false;
-                
-                
-            }
-
-            if (bindings[lastMovedController] > 0)
-            {
-                midiControlledParamSet = true;
-                setEngineParameterValue (bindings[lastMovedController],
-                                         midiMsg->getControllerValue() / 127.0f, true);
-                
-                setEngineParameterValue (MIDILEARN, 0, true);
-                lastMovedController = 0;
-                lastUsedParameter = 0;
-
-                midiControlledParamSet = false;
-            }
-        }
-	}
-}
-
-bool ObxdAudioProcessor::getNextEvent (MidiBuffer::Iterator* iter, const int samplePos)
-{
-	if (hasMidiMessage && midiEventPos <= samplePos)
-	{
-		*midiMsg = *nextMidi;
-		hasMidiMessage = iter->getNextEvent (*nextMidi, midiEventPos);
-		return true;
-	}
-    
-	return false;
-}
-
-void ObxdAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
-{
-	//SSE flags set
+    // SSE flags set
 #ifdef __SSE__
-	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 #endif
 #ifdef __SSE2__
-	// _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+    // _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 #endif
 
-	MidiBuffer::Iterator ppp (midiMessages);
-	hasMidiMessage = ppp.getNextEvent (*nextMidi, midiEventPos);
+    int samplePos = 0;
+    int numSamples = buffer.getNumSamples();
+    float* channelData1 = buffer.getWritePointer(0);
+    float* channelData2 = buffer.getWritePointer(1);
 
-	int samplePos = 0;
-	int numSamples = buffer.getNumSamples();
-	float* channelData1 = buffer.getWritePointer (0);
-	float* channelData2 = buffer.getWritePointer (1);
-
-	AudioPlayHead::CurrentPositionInfo pos;
-    
-    // if (getPlayHead() != 0 && getPlayHead()->getCurrentPosition (pos))
-    // {
-	// 	synth.setPlayHead(pos.bpm, pos.ppqPosition);
-    // }
-    /*Commenting out code and replacing with code below to fix deprecated call. Robert Fawcett*/
-
+    // Playhead handling
     if (auto* playHead = getPlayHead())
     {
         if (auto pos = playHead->getPosition())
@@ -354,13 +255,94 @@ void ObxdAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
         }
     }
 
+    MidiBufferIterator iter = midiMessages.begin(); // Start of the MIDI buffer
+    MidiBufferIterator end = midiMessages.end();    // End of the MIDI buffer
 
-	while (samplePos < numSamples)
-	{
-		processMidiPerSample (&ppp, samplePos);
-		synth.processSample (channelData1+samplePos, channelData2+samplePos);
-		++samplePos;
-	}
+    while (samplePos < numSamples)
+    {
+        // Process MIDI events up to the current sample
+        while (iter != end)
+        {
+            const MidiMessageMetadata metadata = *iter;
+            const MidiMessage& currentMsg = metadata.getMessage();
+            const int eventPos = metadata.samplePosition;
+
+            if (eventPos > samplePos) // Event is in the future, stop here
+                break;
+
+            if (currentMsg.isNoteOn())
+            {
+                synth.procNoteOn(currentMsg.getNoteNumber(), currentMsg.getFloatVelocity());
+            }
+            else if (currentMsg.isNoteOff())
+            {
+                synth.procNoteOff(currentMsg.getNoteNumber());
+            }
+            else if (currentMsg.isPitchWheel())
+            {
+                synth.procPitchWheel((currentMsg.getPitchWheelValue() - 8192) / 8192.0f);
+            }
+            else if (currentMsg.isController() && currentMsg.getControllerNumber() == 1)
+            {
+                synth.procModWheel(currentMsg.getControllerValue() / 127.0f);
+            }
+            else if (currentMsg.isSustainPedalOn())
+            {
+                synth.sustainOn();
+            }
+            else if (currentMsg.isSustainPedalOff() || currentMsg.isAllNotesOff() || currentMsg.isAllSoundOff())
+            {
+                synth.sustainOff();
+            }
+            else if (currentMsg.isAllNotesOff())
+            {
+                synth.allNotesOff();
+            }
+            else if (currentMsg.isAllSoundOff())
+            {
+                synth.allSoundOff();
+            }
+            else if (currentMsg.isProgramChange())
+            {
+                setCurrentProgram(currentMsg.getProgramChangeNumber());
+            }
+            else if (currentMsg.isController())
+            {
+                lastMovedController = currentMsg.getControllerNumber();
+                if (programs.currentProgramPtr->values[MIDILEARN] > 0.5f)
+                {
+                    midiControlledParamSet = true;
+                    bindings.updateCC(lastUsedParameter, lastMovedController);
+                    File midi_file = getMidiFolder().getChildFile("Custom.xml");
+                    bindings.saveFile(midi_file);
+                    currentMidiPath = midi_file.getFullPathName();
+
+                    setEngineParameterValue(MIDILEARN, 0, true);
+                    lastMovedController = 0;
+                    lastUsedParameter = 0;
+                    midiControlledParamSet = false;
+                }
+
+                if (bindings[lastMovedController] > 0)
+                {
+                    midiControlledParamSet = true;
+                    setEngineParameterValue(bindings[lastMovedController],
+                                           currentMsg.getControllerValue() / 127.0f, true);
+
+                    setEngineParameterValue(MIDILEARN, 0, true);
+                    lastMovedController = 0;
+                    lastUsedParameter = 0;
+                    midiControlledParamSet = false;
+                }
+            }
+
+            ++iter; // Move to the next event
+        }
+
+        // Process the audio sample
+        synth.processSample(channelData1 + samplePos, channelData2 + samplePos);
+        ++samplePos;
+    }
 }
 
 //==============================================================================
