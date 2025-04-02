@@ -338,10 +338,22 @@ void ObxdAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 
 	AudioPlayHead::CurrentPositionInfo pos;
     
-    if (getPlayHead() != 0 && getPlayHead()->getCurrentPosition (pos))
+    // if (getPlayHead() != 0 && getPlayHead()->getCurrentPosition (pos))
+    // {
+	// 	synth.setPlayHead(pos.bpm, pos.ppqPosition);
+    // }
+    /*Commenting out code and replacing with code below to fix deprecated call. Robert Fawcett*/
+
+    if (auto* playHead = getPlayHead())
     {
-		synth.setPlayHead(pos.bpm, pos.ppqPosition);
+        if (auto pos = playHead->getPosition())
+        {
+            double bpm = pos->getBpm().hasValue() ? *pos->getBpm() : 120.0;
+            double ppq = pos->getPpqPosition().hasValue() ? *pos->getPpqPosition() : 0.0;
+            synth.setPlayHead(bpm, ppq);
+        }
     }
+
 
 	while (samplePos < numSamples)
 	{
