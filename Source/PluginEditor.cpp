@@ -593,23 +593,25 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
         presetBar.reset(new PresetBar(*this));
         addAndMakeVisible(*presetBar);
         presetBar->setVisible(processor.getShowPresetBar());
-        presetBar->leftClicked = [this](juce::Point<int> &pos){
-            PopupMenu menu;
+        presetBar->leftClicked = [this](juce::Point<int>& pos) {
+            juce::PopupMenu menu;
             menu.setLookAndFeel(&this->getLookAndFeel());
             for (int i = 0; i < processor.getNumPrograms(); ++i)
             {
-                menu.addItem (i + progStart + 1,
-                                  processor.getProgramName (i),
-                                  true,
-                                  i == processor.getCurrentProgram());
+                menu.addItem(i + progStart + 1,
+                             processor.getProgramName(i),
+                             true,
+                             i == processor.getCurrentProgram());
             }
-            int result = menu.showAt (Rectangle<int> (pos.getX(), pos.getY(), 1, 1));
-        
-            if (result >= (progStart + 1) && result <= (progStart + processor.getNumPrograms())){
-                result -= 1;
-                result -= progStart;
-                processor.setCurrentProgram (result);
-            }
+            menu.showMenuAsync(juce::PopupMenu::Options()
+                                  .withTargetScreenArea(juce::Rectangle<int>(pos.getX(), pos.getY(), 1, 1)),
+                               [this](int result) {
+                                   if (result >= (progStart + 1) && result <= (progStart + processor.getNumPrograms()))
+                                   {
+                                       int adjustedResult = result - 1 - progStart;
+                                       processor.setCurrentProgram(adjustedResult);
+                                   }
+                               });
         };
         resized();
     }
@@ -1097,81 +1099,86 @@ void ObxdAudioProcessorEditor::createMidi(int menuNo, PopupMenu &menuMidi) {
     }
 }
 
-void ObxdAudioProcessorEditor::resultFromMenu (const Point<int> pos)
+void ObxdAudioProcessorEditor::resultFromMenu(const juce::Point<int> pos)
 {
     createMenu();
-    int result = popupMenus[0]->showAt (Rectangle<int> (pos.getX(), pos.getY(), 1, 1));
-    
-    if (result >= (skinStart + 1) && result <= (skinStart + skins.size()))
-    {
-        result -= 1;
-        result -= skinStart;
-        
-        const File newSkinFolder = skins.getUnchecked (result);
-        processor.setCurrentSkinFolder (newSkinFolder.getFileName());
-        
-        //rebuildComponents (processor);
-        clean();
-        loadSkin (processor);
-    }
-    else if (result >= (bankStart + 1) && result <= (bankStart + banks.size()))
-    {
-        result -= 1;
-        result -= bankStart;
-        
-        const File bankFile = banks.getUnchecked (result);
-        processor.loadFromFXBFile (bankFile);
-        //clean();
-        //loadSkin (processor); // Check this
-    }
-    else if (result >= (progStart + 1) && result <= (progStart + processor.getNumPrograms()))
-    {
-        result -= 1;
-        result -= progStart;
-        processor.setCurrentProgram (result);
-        //clean();
-        //loadSkin (processor); // Check this
-    }
-    else if (result < progStart){
-        MenuActionCallback(result);
-    }
-    else if (result == progStart + 1000){
-        processor.setShowPresetBar(!processor.getShowPresetBar());
-        //createMenu();
-        updatePresetBar(true);
-    }
-    else if (result >= menuScaleNum){
-        
-        if (result ==menuScaleNum){
-            ScalableComponent::setScaleFactor(1.0f, isHighResolutionDisplay());
-            processor.setGuiSize(1);
-        }
-        else if (result == menuScaleNum+1){
-            ScalableComponent::setScaleFactor(1.5f, isHighResolutionDisplay());
-            processor.setGuiSize(2);
-        }
-        else if (result == menuScaleNum+2) {
-            ScalableComponent::setScaleFactor(2.0f, isHighResolutionDisplay());
-            processor.setGuiSize(4);
-        }
-        else if (result == menuScaleNum+4) {
-            File manualFile = processor.getDocumentFolder().getChildFile("OB-Xd Manual.pdf");
-            openInPdf(manualFile);
-        }
-    }
-    else if (result >= menuMidiNum){
-        unsigned int selected_idx = result - menuMidiNum;
-        if (selected_idx >= 0 && selected_idx < midiFiles.size()){
-            File f(midiFiles[selected_idx]);
-            if (f.exists()) {
-                processor.currentMidiPath = midiFiles[selected_idx];
-                processor.bindings.loadFile(f);
-                processor.updateConfig();
+    popupMenus[0]->showMenuAsync(
+        juce::PopupMenu::Options().withTargetScreenArea(juce::Rectangle<int>(pos.getX(), pos.getY(), 1, 1)),
+        [this](int result)
+        {
+            if (result >= (skinStart + 1) && result <= (skinStart + skins.size()))
+            {
+                result -= 1;
+                result -= skinStart;
                 
-                //createMenu();
+                const juce::File newSkinFolder = skins.getUnchecked(result);
+                processor.setCurrentSkinFolder(newSkinFolder.getFileName());
+                
+                clean();
+                loadSkin(processor);
+            }
+            else if (result >= (bankStart + 1) && result <= (bankStart + banks.size()))
+            {
+                result -= 1;
+                result -= bankStart;
+                
+                const juce::File bankFile = banks.getUnchecked(result);
+                processor.loadFromFXBFile(bankFile);
+            }
+            else if (result >= (progStart + 1) && result <= (progStart + processor.getNumPrograms()))
+            {
+                result -= 1;
+                result -= progStart;
+                processor.setCurrentProgram(result);
+            }
+            else if (result < progStart)
+            {
+                MenuActionCallback(result);
+            }
+            else if (result == progStart + 1000)
+            {
+                processor.setShowPresetBar(!processor.getShowPresetBar());
+                updatePresetBar(true);
+            }
+            else if (result >= menuScaleNum)
+            {
+                if (result == menuScaleNum)
+                {
+                    ScalableComponent::setScaleFactor(1.0f, isHighResolutionDisplay());
+                    processor.setGuiSize(1);
+                }
+                else if (result == menuScaleNum + 1)
+                {
+                    ScalableComponent::setScaleFactor(1.5f, isHighResolutionDisplay());
+                    processor.setGuiSize(2);
+                }
+                else if (result == menuScaleNum + 2)
+                {
+                    ScalableComponent::setScaleFactor(2.0f, isHighResolutionDisplay());
+                    processor.setGuiSize(4);
+                }
+                else if (result == menuScaleNum + 4)
+                {
+                    juce::File manualFile = processor.getDocumentFolder().getChildFile("OB-Xd Manual.pdf");
+                    openInPdf(manualFile);
+                }
+            }
+            else if (result >= menuMidiNum)
+            {
+                unsigned int selected_idx = result - menuMidiNum;
+                if (selected_idx >= 0 && selected_idx < midiFiles.size())
+                {
+                    juce::File f(midiFiles[selected_idx]);
+                    if (f.exists())
+                    {
+                        processor.currentMidiPath = midiFiles[selected_idx];
+                        processor.bindings.loadFile(f);
+                        processor.updateConfig();
+                    }
+                }
             }
         }
-    }
+    );
 }
 
 void ObxdAudioProcessorEditor::updatePresetBar(bool resize){
@@ -1193,55 +1200,78 @@ void ObxdAudioProcessorEditor::updatePresetBar(bool resize){
     }
 }
 
-void ObxdAudioProcessorEditor::MenuActionCallback(int action){
-    
-    
+void ObxdAudioProcessorEditor::MenuActionCallback(int action)
+{
     if (action == MenuAction::ImportBank)
     {
         fileChooser = std::make_unique<juce::FileChooser>("Import Bank (*.fxb)", juce::File(), "*.fxb", true);
         
-        if (fileChooser->browseForFileToOpen()) {
-            File result = fileChooser->getResult();
-            auto name = result.getFileName().replace("%20", " ");
-            auto file = processor.getBanksFolder().getChildFile(name);
-            
-            if (result == file || result.copyFileTo(file)){
-                processor.loadFromFXBFile(file);
-                processor.scanAndUpdateBanks();
-                //createMenu();
+        fileChooser->launchAsync(
+            juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
+            [this](const juce::FileChooser& chooser)
+            {
+                juce::File result = chooser.getResult();
+                if (result != juce::File()) // Check if a file was selected
+                {
+                    auto name = result.getFileName().replace("%20", " ");
+                    auto file = processor.getBanksFolder().getChildFile(name);
+                    
+                    if (result == file || result.copyFileTo(file))
+                    {
+                        processor.loadFromFXBFile(file);
+                        processor.scanAndUpdateBanks();
+                        //createMenu();
+                    }
+                }
             }
-        }
-    };
+        );
+    }
     
     if (action == MenuAction::ExportBank)
     {
         auto file = processor.getDocumentFolder().getChildFile("Banks");
-        FileChooser myChooser ("Export Bank (*.fxb)", file, "*.fxb", true);
-        if(myChooser.browseForFileToSave(true))
-        {
-            File result = myChooser.getResult();
-            
-            String temp = result.getFullPathName();
-            if (!temp.endsWith(".fxb")) {
-                temp += ".fxb";
+        juce::FileChooser myChooser("Export Bank (*.fxb)", file, "*.fxb", true);
+        myChooser.launchAsync(
+            juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::warnAboutOverwriting,
+            [this](const juce::FileChooser& chooser)
+            {
+                juce::File result = chooser.getResult();
+                if (result != juce::File())
+                {
+                    juce::String temp = result.getFullPathName();
+                    if (!temp.endsWith(".fxb"))
+                    {
+                        temp += ".fxb";
+                    }
+                    processor.saveBank(juce::File(temp));
+                }
             }
-            processor.saveBank(File(temp));
-            
-        }
-    };
+        );
+    }
     
     if (action == MenuAction::DeleteBank)
     {
-        if(NativeMessageBox::showOkCancelBox(AlertWindow::NoIcon, "Delete Bank", "Delete current bank: " + processor.currentBank + "?")){
-            processor.deleteBank();
-        }
+        juce::AlertWindow::showAsync(
+            juce::MessageBoxOptions()
+                .withIconType(juce::MessageBoxIconType::NoIcon)
+                .withTitle("Delete Bank")
+                .withMessage("Delete current bank: " + processor.currentBank + "?")
+                .withButton("OK")
+                .withButton("Cancel"),
+            [this](int result)
+            {
+                if (result == 1) // 1 = OK, 0 = Cancel
+                {
+                    processor.deleteBank();
+                }
+            }
+        );
     }
-    
     
     if (action == MenuAction::SavePreset)
     {
         auto presetName = processor.currentPreset;
-        if (presetName.isEmpty() )
+        if (presetName.isEmpty())
         {
             processor.saveBank();
             return;
@@ -1256,7 +1286,7 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action){
         //preventBackgroundClick();
         addAndMakeVisible(setPresetNameWindow.get());
         resized();
-       
+        
         auto callback = [this](int i, juce::String name)
         {
             if (i)
@@ -1267,7 +1297,6 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action){
                     //createMenu();
                 }
             }
-
             setPresetNameWindow.reset();
             //preventBackgroundClickComponent.reset();
         };
@@ -1285,7 +1314,7 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action){
         setPresetNameWindow->setText(processor.getProgramName(processor.getCurrentProgram()));
         addAndMakeVisible(setPresetNameWindow.get());
         resized();
-       
+        
         auto callback = [this](int i, juce::String name)
         {
             if (i)
@@ -1296,7 +1325,6 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action){
                     //createMenu();
                 }
             }
-
             setPresetNameWindow.reset();
             //preventBackgroundClickComponent.reset();
         };
@@ -1309,98 +1337,104 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action){
     
     if (action == MenuAction::DeletePreset)
     {
-        if(NativeMessageBox::showOkCancelBox(AlertWindow::NoIcon, "Delete Preset", "Delete current preset " + processor.currentPreset + "?")){
-            processor.deletePreset();
-            //createMenu();
-        }
+        juce::AlertWindow::showAsync(
+            juce::MessageBoxOptions()
+                .withIconType(juce::MessageBoxIconType::NoIcon)
+                .withTitle("Delete Preset")
+                .withMessage("Delete current preset " + processor.currentPreset + "?")
+                .withButton("OK")
+                .withButton("Cancel"),
+            [this](int result)
+            {
+                if (result == 1) // 1 = OK, 0 = Cancel
+                {
+                    processor.deletePreset();
+                    //createMenu();
+                }
+            }
+        );
         return;
     }
     
-
     if (action == MenuAction::ImportPreset)
     {
         DBG("Import Preset");
         fileChooser = std::make_unique<juce::FileChooser>("Import Preset (*.fxp)", juce::File(), "*.fxp", true);
 
-        if (fileChooser->browseForFileToOpen()) {
-            File result = fileChooser->getResult();
-            //auto name = result.getFileName().replace("%20", " ");
-            //auto file = processor.getPresetsFolder().getChildFile(name);
-            DBG("Import Preset: " << result.getFileName());
-            //if (result == file || result.copyFileTo(file)){
-                processor.loadPreset(result);
-                //createMenu();
-            //}
-        }
-    };
+        fileChooser->launchAsync(
+            juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
+            [this](const juce::FileChooser& chooser)
+            {
+                juce::File result = chooser.getResult();
+                if (result != juce::File()) // Check if a file was selected
+                {
+                    //auto name = result.getFileName().replace("%20", " ");
+                    //auto file = processor.getPresetsFolder().getChildFile(name);
+                    DBG("Import Preset: " << result.getFileName());
+                    //if (result == file || result.copyFileTo(file)){
+                        processor.loadPreset(result);
+                        //createMenu();
+                    //}
+                }
+            }
+        );
+    }
     
     if (action == MenuAction::ExportPreset)
     {
-        
         auto file = processor.getPresetsFolder();
-        FileChooser myChooser ("Export Preset (*.fxp)", file, "*.fxp", true);
-        if(myChooser.browseForFileToSave(true))
-        {
-            File result = myChooser.getResult();
-            
-            String temp = result.getFullPathName();
-            if (!temp.endsWith(".fxp")) {
-                temp += ".fxp";
+        juce::FileChooser myChooser("Export Preset (*.fxp)", file, "*.fxp", true);
+        myChooser.launchAsync(
+            juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::warnAboutOverwriting,
+            [this](const juce::FileChooser& chooser)
+            {
+                juce::File result = chooser.getResult();
+                if (result != juce::File()) // Check if a file was selected
+                {
+                    juce::String temp = result.getFullPathName();
+                    if (!temp.endsWith(".fxp"))
+                    {
+                        temp += ".fxp";
+                    }
+                    processor.savePreset(juce::File(temp));
+                }
             }
-            processor.savePreset(File(temp));
-            
-        }
-    };
+        );
+    }
 
 #if JUCE_MAC
-	// Copy to clipboard
-	if (action == MenuAction::CopyPreset)
-	{
-		juce::MemoryBlock serializedData;
-
-		// Serialize the Preset, produces the same data as an export but into memory instead of a file.
-		processor.serializePreset(serializedData);
-
-		// Place the data onto the clipboard
-		macPasteboard::copyPresetDataToClipboard(serializedData.getData(), serializedData.getSize());
-	}
-
-	// Paste from clipboard
-	if (action == MenuAction::PastePreset)
-	{
-		juce::MemoryBlock memoryBlock;
-
-		// Fetch Preset data from the clipboard
-		if (macPasteboard::fetchPresetDataFromClipboard(memoryBlock))
-		{
-			// Load the data
-			processor.loadFromMemoryBlock(memoryBlock);	//loadPreset(memoryBlock);
-		}
-	}
-#else
     // Copy to clipboard
     if (action == MenuAction::CopyPreset)
     {
         juce::MemoryBlock serializedData;
-
-        // Serialize the Preset, produces the same data as an export but into memory instead of a file.
         processor.serializePreset(serializedData);
-        
-        // Place the data onto the clipboard
-        SystemClipboard::copyTextToClipboard(serializedData.toBase64Encoding());
+        macPasteboard::copyPresetDataToClipboard(serializedData.getData(), serializedData.getSize());
     }
 
     // Paste from clipboard
     if (action == MenuAction::PastePreset)
     {
         juce::MemoryBlock memoryBlock;
+        if (macPasteboard::fetchPresetDataFromClipboard(memoryBlock))
+        {
+            processor.loadFromMemoryBlock(memoryBlock);
+        }
+    }
+#else
+    // Copy to clipboard
+    if (action == MenuAction::CopyPreset)
+    {
+        juce::MemoryBlock serializedData;
+        processor.serializePreset(serializedData);
+        juce::SystemClipboard::copyTextToClipboard(serializedData.toBase64Encoding());
+    }
 
-        // Fetch Preset data from the clipboard
-        memoryBlock.fromBase64Encoding(SystemClipboard::getTextFromClipboard());
-
-        // Load the data
-        processor.loadFromMemoryBlock(memoryBlock);	//loadPreset(memoryBlock);
-        
+    // Paste from clipboard
+    if (action == MenuAction::PastePreset)
+    {
+        juce::MemoryBlock memoryBlock;
+        memoryBlock.fromBase64Encoding(juce::SystemClipboard::getTextFromClipboard());
+        processor.loadFromMemoryBlock(memoryBlock);
     }
 #endif
 }

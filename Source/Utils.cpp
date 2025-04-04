@@ -2,15 +2,19 @@
 // Robert Fawcett
 #include "Utils.h"
 
-void openInPdf(const File& file)
-{
-    if (file.existsAsFile()) {
-
-        file.startAsProcess();
-
-    }
-    else {
-        
-        NativeMessageBox::showMessageBox(AlertWindow::WarningIcon, "Error", "OB-Xd Manual.pdf not found.");
+void openInPdf(const juce::File& file)
+    {
+        if (file.existsAsFile())
+        {
+            file.startAsProcess();
         }
-}
+        else
+        {
+            juce::NativeMessageBox::showMessageBoxAsync(
+                juce::MessageBoxIconType::WarningIcon,
+                "Error",
+                "OB-Xd Manual.pdf not found.",
+                nullptr
+            );
+        }
+    }
