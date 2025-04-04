@@ -92,7 +92,7 @@
   </MAINGROUP>
   <EXPORTFORMATS>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" extraLinkerFlags="-no-pie -lcurl"
-                vstLegacyFolder="Modules/vstsdk2.4" extraDefs="JUCE_MODAL_LOOPS_PERMITTED=1">
+                vstLegacyFolder="Modules/vstsdk2.4" extraDefs="JUCE_MODAL_LOOPS_PERMITTED=0">
       <CONFIGURATIONS>
         <CONFIGURATION name="Release64" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="3"
                        targetName="OB-Xd-GREC" linuxArchitecture="-m64" headerPath="../../JuceLibraryCode&#10;../../Source&#10;../Modules/vstsdk2.4&#10;/usr/include/freetype2&#10;/usr/include"
