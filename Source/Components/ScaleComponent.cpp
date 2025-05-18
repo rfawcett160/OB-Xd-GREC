@@ -14,9 +14,9 @@
 
 //==============================================================================
 ScalableComponent::ScalableComponent(ObxdAudioProcessor* owner_)
-    : scaleFactor(0.0f),
-	  isHighResolutionDisplay(false),
-        processor(owner_)
+    : processor(owner_),
+      scaleFactor(0.0f),
+	  isHighResolutionDisplay(false)
 {
     setScaleFactor(1.0f, false);
 }
@@ -98,33 +98,35 @@ Image ScalableComponent::getScaledImageFromCache(const String& imageName,
 													   float scaleFactor,
 													   bool isHighResolutionDisplay)
 {
-    jassert(scaleFactor == 1.0f || scaleFactor == 1.5f || scaleFactor == 2.0f);
+jassert(scaleFactor == 1.0f || scaleFactor == 1.5f || scaleFactor == 2.0f);
+    (void)scaleFactor; // Prevent unused parameter warning in release builds
+
     this->isHighResolutionDisplay = isHighResolutionDisplay;
     int scaleFactorInt = getScaleInt();
     String resourceName = imageName + "_png";
-    if (scaleFactorInt != 1){
+    if (scaleFactorInt != 1) {
         resourceName = imageName + String::formatted("%dx_png", scaleFactorInt);
     }
-        
 
     int size = 0;
     File skin;
-    if (processor){
+    if (processor) {
         File f(processor->getCurrentSkinFolder());
-        if (f.isDirectory()){
-            skin=f;
+        if (f.isDirectory()) {
+            skin = f;
         }
     }
-    
+
     const char* data = nullptr;
     String image_file = imageName;
-    if (scaleFactorInt ==1)
-        image_file +=  ".png";
+    if (scaleFactorInt == 1)
+        image_file += ".png";
     else
         image_file += String::formatted("@%dx.png", scaleFactorInt);
     DBG(" Loaf image: " << image_file);
+
     File file = skin.getChildFile(image_file);
-    if (file.exists()){
+    if (file.exists()) {
         return ImageCache::getFromFile(file);
     } else {
         data = BinaryData::getNamedResource((const char*)resourceName.toUTF8(), size);

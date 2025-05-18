@@ -79,7 +79,10 @@ public:
         #endif
 
         #ifdef JUCE_LINUX
-            return Font("DejaVu Sans", 18.0 * scaleFactor, Font::plain);
+            return juce::Font(juce::FontOptions()
+                          .withName("DejaVu Sans")
+                          .withHeight(18.0f * scaleFactor)
+                          .withStyle("Regular"));
         #endif
     }
  
