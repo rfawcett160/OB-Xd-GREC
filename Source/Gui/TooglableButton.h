@@ -71,12 +71,7 @@ public:
             parameter = stateToControl.getParameter (parameterID);
             //buttonToControl.setParameter (parameter);
         }
-        /*
-        ToggleAttachment (juce::AudioProcessorValueTreeState& stateToControl,
-                          const juce::String& parameterID,
-                          Button& buttonToControl) : AudioProcessorValueTreeState::ButtonAttachment (stateToControl, parameterID, buttonToControl)
-        {
-        }*/
+
         void updateToSlider(){
             float val = parameter->getValue();
             //buttonToControl->setValue(parameter->convertFrom0to1(val0to1), NotificationType::dontSendNotification);
@@ -85,66 +80,26 @@ public:
         }
         virtual ~ToggleAttachment() = default;
     };
-    /*
-    void setParameter (const AudioProcessorParameter* p)
+        
+	void paintButton(juce::Graphics& g, bool, bool) override
     {
-        if (parameter == p)
-            return;
+        jassert(kni.getWidth() >= w2 * cachedScale && kni.getHeight() >= h2 * cachedScale * 2); // Debug check
+        int offset = getToggleState() ? 1 : 0;
         
-        parameter = p;
-        repaint();
-    }*/
-    /*
-	void clicked() override
-	{
-		toogled = ! toogled;
-		//this->setColour(1,Colours::blue);
-		//if(toogled)
-		//	this->setColour(TextButton::ColourIds::buttonColourId,Colours::lightgreen);
-		//else
-		//	this->removeColour(TextButton::ColourIds::buttonColourId);
-		//this->setColour(DrawableButton::ColourIds::backgroundColourId,Colours::lightpink);
-		Button::clicked();
-
-	};*/
+        g.drawImage(kni, 0, 0, cachedWidth, cachedHeight, 0, offset * h2 * cachedScale, w2 * cachedScale, h2 * cachedScale);
+    }
     
-	void paintButton (Graphics& g, bool isMouseOverButton, bool isButtonDown) override
-	{
-        int offset = 0;
-        
-        //if (toogled)
-        if (getToggleState())
-        {
-            offset = 1;
-        }
-        
-		g.drawImage(kni, 0, 0, getWidth(), getHeight(), 0, offset * h2 * getScaleInt() , w2 * getScaleInt(), h2 * getScaleInt());
-	}
-    /*
-	void setValue (float state, int notify)
-	{
-		if (state > 0.5)
-            toogled = true;
-		else toogled = false;
-        
-		repaint();
-	}*/
-    
-	/*float getValue()
-	{
-		if (toogled)
-           return 1;
-		else return 0;
-	}*/
-	//void paint(Graphics& g)
-	//{
-	//	g.drawImageTransformed(kni,AffineTransform::rotation(((getValue() - getMinimum())/(getMaximum() - getMinimum()))*float_Pi - float_Pi*2));
-	//}
-    
-    //bool toogled;
-    
+        void resized() override
+    {
+        cachedWidth = getWidth();
+        cachedHeight = getHeight();
+        cachedScale = getScaleInt();
+    }    
 private:
 	Image kni;
 	int width, height, w2, h2;
+    int cachedWidth = 0;
+    int cachedHeight = 0;
+    int cachedScale = 1;
     //const AudioProcessorParameter* parameter;
 };

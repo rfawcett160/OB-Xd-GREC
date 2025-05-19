@@ -47,7 +47,10 @@ PresetBar::PresetBar (ObxdAudioProcessorEditor &gui)
 #endif
 
 #ifdef JUCE_LINUX
-    presetNameLb->setFont (juce::Font ("DejaVu Sans", 16.00f, juce::Font::plain).withTypefaceStyle ("Bold"));
+    presetNameLb->setFont(juce::Font(juce::FontOptions()
+        .withName("DejaVu Sans")
+        .withHeight(16.00f)
+        .withStyle("Bold")));
 #endif
 
     presetNameLb->setJustificationType (juce::Justification::centred);
