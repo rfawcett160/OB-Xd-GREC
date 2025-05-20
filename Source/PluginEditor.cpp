@@ -197,7 +197,6 @@ void ObxdAudioProcessorEditor::loadSkin (ObxdAudioProcessor& ownerFilter)
         setSize (1440, 450);
     }
     else {
-        int xScreen = getWidth(), yScreen = getHeight();
         if (doc->getTagName() == "PROPERTIES"){
            
             for (auto* child : doc->getChildWithTagNameIterator("VALUE")) { // Replaced macro here
@@ -1165,8 +1164,8 @@ void ObxdAudioProcessorEditor::resultFromMenu(const juce::Point<int> pos)
             }
             else if (result >= menuMidiNum)
             {
-                unsigned int selected_idx = result - menuMidiNum;
-                if (selected_idx >= 0 && selected_idx < midiFiles.size())
+                unsigned int selected_idx = static_cast<unsigned int>(result - menuMidiNum);
+                if (selected_idx < static_cast<unsigned int>(midiFiles.size()))
                 {
                     juce::File f(midiFiles[selected_idx]);
                     if (f.exists())
@@ -1527,7 +1526,8 @@ void ObxdAudioProcessorEditor::updateFromHost() {
     
     repaint();
 }
-void ObxdAudioProcessorEditor::changeListenerCallback (ChangeBroadcaster* source)
+
+void ObxdAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster*)
 {
     updateFromHost();
 }
@@ -1632,7 +1632,7 @@ bool ObxdAudioProcessorEditor::isInterestedInFileDrag(const StringArray& files)
     return false;
 }
 
-void ObxdAudioProcessorEditor::filesDropped(const StringArray& files, int x, int y)
+void ObxdAudioProcessorEditor::filesDropped(const StringArray& files, int, int)
 {
     if (files.size() == 1) {
         File file = File(files[0]);

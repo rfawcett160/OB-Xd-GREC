@@ -54,45 +54,63 @@ AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
 //==============================================================================
 ObxdAudioProcessor::ObxdAudioProcessor()
-	: bindings()
-	, programs()
-	, configLock("__" JucePlugin_Name "ConfigLock__")
-    , apvtState (*this, &undoManager, "PARAMETERS", createParameterLayout())
+    : AudioProcessor{} // Initialize base class
+    , AudioProcessorValueTreeState::Listener{} // Initialize base class
+    , isHostAutomatedChange{true}
+    , lastMovedController{0}
+    , lastUsedParameter{0}
+    , synth{}
+    , programs{}
+    , physicalPixelScaleFactor{1.0f}
+    , gui_size{1}
+    , currentSkin{"Ilkka Rosma Dark"}
+    , currentBank{"000 - FMR OB-Xa Patch Book"}
+    , currentBankFile{}
+    , currentMidiPath{}
+    , currentPreset{}
+    , currentPresetFile{}
+    , bindings{}
+    , showPresetBar{false}
+    , bankFiles{}
+    , skinFiles{}
+    , tooltipBehavior{Tooltip::StandardDisplay}
+    , config{}
+    , configLock{"__" JucePlugin_Name "ConfigLock__"}
+    , apvtState{*this, &undoManager, "PARAMETERS", createParameterLayout()}
+    , undoManager{}
 {
-	isHostAutomatedChange = true;
-	midiControlledParamSet = false;
-	lastMovedController = 0;
-	lastUsedParameter = 0;
+    // Initialize config
+    PropertiesFile::Options options;
+    options.applicationName = JucePlugin_Name;
+    options.storageFormat = PropertiesFile::storeAsXML;
+    options.millisecondsBeforeSaving = 2500;
+    options.processLock = &configLock;
+    config = std::make_unique<PropertiesFile>(getDocumentFolder().getChildFile("Skin.xml"), options);
 
-	synth.setSampleRate (44100);
-    
-	PropertiesFile::Options options;
-	options.applicationName = JucePlugin_Name;
-	options.storageFormat = PropertiesFile::storeAsXML;
-	options.millisecondsBeforeSaving = 2500;
-	options.processLock = &configLock;
-    config = std::unique_ptr<PropertiesFile> (new PropertiesFile (getDocumentFolder().getChildFile ("Skin.xml"), options));
+    // Load config values
     showPresetBar = config->getBoolValue("presetnavigation");
     gui_size = config->getIntValue("gui_size", 1);
     tooltipBehavior = static_cast<Tooltip>(config->getIntValue("tooltip", 1));
-	currentSkin = config->containsKey("skin") ? config->getValue("skin") : "Ilkka Rosma Dark";
-	currentBank = "000 - FMR OB-Xa Patch Book";
+    currentSkin = config->containsKey("skin") ? config->getValue("skin") : "Ilkka Rosma Dark";
+    currentBank = "000 - FMR OB-Xa Patch Book";
 
-	scanAndUpdateBanks();
+    synth.setSampleRate(44100);
+
+    scanAndUpdateBanks();
     scanAndUpdateSkins();
     initAllParams();
 
-	if (bankFiles.size() > 0)
-	{
-		loadFromFXBFile (bankFiles[0]);
-	}
-    
+    if (bankFiles.size() > 0)
+    {
+        loadFromFXBFile(bankFiles[0]);
+    }
+
     for (int i = 0; i < PARAM_COUNT; ++i)
     {
-        apvtState.addParameterListener (getEngineParameterId (i), this);
+        apvtState.addParameterListener(getEngineParameterId(i), this);
     }
-    
-    apvtState.state = ValueTree (JucePlugin_Name);
+
+    apvtState.state = ValueTree(JucePlugin_Name);
     initMidi();
 }
 
@@ -128,14 +146,14 @@ const String ObxdAudioProcessor::getOutputChannelName (int channelIndex) const
 	return String (channelIndex + 1);
 }
 
-bool ObxdAudioProcessor::isInputChannelStereoPair (int index) const
+bool ObxdAudioProcessor::isInputChannelStereoPair(int) const
 {
-	return true;
+    return true;
 }
 
-bool ObxdAudioProcessor::isOutputChannelStereoPair (int index) const
+bool ObxdAudioProcessor::isOutputChannelStereoPair(int) const
 {
-	return true;
+    return true;
 }
 
 bool ObxdAudioProcessor::acceptsMidi() const
@@ -587,7 +605,7 @@ void ObxdAudioProcessor::deletePreset(){
     //saveBank();
 }
 
-void ObxdAudioProcessor::newPreset(const String &name) {
+void ObxdAudioProcessor::newPreset(const String&) {
     for (int i = 0; i < PROGRAMCOUNT; ++i)
     {
         if (programs.programs[i].name == "Default"){
@@ -595,8 +613,7 @@ void ObxdAudioProcessor::newPreset(const String &name) {
             break;
         }
     }
-    //savePreset();
-    //saveBank();
+    
 }
 
 void ObxdAudioProcessor::savePreset() {
