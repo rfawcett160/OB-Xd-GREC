@@ -18,7 +18,7 @@ Binaries will be released once I get this project up and running. My primary foc
 
 # Building
 
-Source code can be compiled with [JUCE 8.0.0](https://github.com/juce-framework/JUCE/releases/tag/8.0.0).
+Source code can be compiled with [JUCE 8.0.6](https://github.com/juce-framework/JUCE/releases/tag/8.0.6).
 
 
 # Copyright
