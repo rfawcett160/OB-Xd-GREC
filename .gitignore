@@ -1,0 +1,5 @@
+# Ignore build artifacts and dependencies
+JuceLibraryCode/ 	# Juce Library Code Folder
+Builds/                 # Common build folder
+*.o                     # Object files
+*.exe                   # Executables
