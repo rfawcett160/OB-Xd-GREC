@@ -3,4 +3,5 @@
 <PROPERTIES>
   <VALUE name="presetnavigation" val="1"/>
   <VALUE name="skin" val="QuickAndDirtyGREC"/>
+  <VALUE name="gui_size" val="2"/>
 </PROPERTIES>
