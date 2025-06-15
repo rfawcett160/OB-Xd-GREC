@@ -1228,24 +1228,28 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action)
     
     if (action == MenuAction::ExportBank)
     {
-        auto file = processor.getDocumentFolder().getChildFile("Banks");
-        juce::FileChooser myChooser("Export Bank (*.fxb)", file, "*.fxb", true);
-        myChooser.launchAsync(
-            juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::warnAboutOverwriting,
-            [this](const juce::FileChooser& chooser)
+        const auto file = processor.getDocumentFolder().getChildFile("Banks");
+        fileChooser = std::make_unique<juce::FileChooser>("Export Bank", file, "*.fxb", true);
+        fileChooser->launchAsync(
+            juce::FileBrowserComponent::saveMode |
+            juce::FileBrowserComponent::canSelectFiles |
+            juce::FileBrowserComponent::warnAboutOverwriting,
+            [this](const juce::FileChooser &chooser)
             {
-                juce::File result = chooser.getResult();
-                if (result != juce::File())
+                const juce::File result = chooser.getResult();
+                juce::MessageManager::callAsync([this, result]()
                 {
-                    juce::String temp = result.getFullPathName();
-                    if (!temp.endsWith(".fxb"))
+                    if (result != juce::File())
                     {
-                        temp += ".fxb";
+                        juce::String temp = result.getFullPathName();
+                        if (!temp.endsWith(".fxb"))
+                        {
+                            temp += ".fxb";
+                        }
+                        processor.saveBank(juce::File(temp));
                     }
-                    processor.saveBank(juce::File(temp));
-                }
-            }
-        );
+                });
+            });
     }
     
     if (action == MenuAction::DeleteBank)
@@ -1381,24 +1385,23 @@ void ObxdAudioProcessorEditor::MenuActionCallback(int action)
     
     if (action == MenuAction::ExportPreset)
     {
-        auto file = processor.getPresetsFolder();
-        juce::FileChooser myChooser("Export Preset (*.fxp)", file, "*.fxp", true);
-        myChooser.launchAsync(
-            juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles | juce::FileBrowserComponent::warnAboutOverwriting,
-            [this](const juce::FileChooser& chooser)
-            {
-                juce::File result = chooser.getResult();
-                if (result != juce::File()) // Check if a file was selected
-                {
-                    juce::String temp = result.getFullPathName();
-                    if (!temp.endsWith(".fxp"))
-                    {
-                        temp += ".fxp";
-                    }
-                    processor.savePreset(juce::File(temp));
-                }
-            }
-        );
+        const auto file = processor.getPresetsFolder();
+        fileChooser = std::make_unique<juce::FileChooser>("Export Preset", file, "*.fxp", true);
+        fileChooser->launchAsync(juce::FileBrowserComponent::saveMode |
+                                     juce::FileBrowserComponent::canSelectFiles |
+                                     juce::FileBrowserComponent::warnAboutOverwriting,
+                                 [this](const juce::FileChooser &chooser) {
+                                     const juce::File result = chooser.getResult();
+                                     if (result != juce::File())
+                                     {
+                                         juce::String temp = result.getFullPathName();
+                                         if (!temp.endsWith(".fxp"))
+                                         {
+                                             temp += ".fxp";
+                                         }
+                                         processor.savePreset(juce::File(temp));
+                                     }
+                                 });
     }
 
 #if JUCE_MAC
