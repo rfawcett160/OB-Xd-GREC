@@ -1,5 +1,5 @@
 # OB-Xd-GREC
-
+This is just a quick test.
 
 # About
 OB-Xd-GREC is a fork of DiscoDSP's OB-Xd 2.10 Release. The ultimate goal of this repository/project is to preserve the 2.10 source code as it was prior to DiscoDSP's decision to close the source code for OB-Xd. Any binaries/plugins created by myself WILL NOT have any restrictions placed on the end user. Unlike other so called "FREE" synth plugins, this synth can be used freely for both non-commercial and commercial purposes.
